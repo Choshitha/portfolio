@@ -538,8 +538,9 @@ $("#yrs").addEventListener("click",e=>{const b=e.target.closest("[data-y]");if(b
 if(CONFIG.linkedin){const a=document.createElement("a");a.className="btn";a.href=CONFIG.linkedin;a.target="_blank";a.rel="noopener";a.textContent="LinkedIn";$("#cta").appendChild(a)}
 $("#copy").onclick=async e=>{const b=e.currentTarget;try{await navigator.clipboard.writeText(CONFIG.email);b.textContent="Copied"}catch(_){b.textContent=CONFIG.email}setTimeout(()=>b.textContent="Copy email address",2200)};
 const links=$$(".nav a");
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle("on",a.dataset.s===e.target.dataset.nav))}),{rootMargin:"-45% 0px -50% 0px"});
-$$("[data-nav]").forEach(s=>io.observe(s));
+const sections=$$("[data-nav]");
+function syncNav(){const marker=scrollY+innerHeight*.45;let active=sections[0].dataset.nav;sections.forEach(s=>{if(s.offsetTop<=marker)active=s.dataset.nav});if(scrollY+innerHeight>=document.documentElement.scrollHeight-4)active="contact";links.forEach(a=>{const current=a.dataset.s===active;a.classList.toggle("on",current);if(current)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")})}
+let navFrame=false;addEventListener("scroll",()=>{if(!navFrame){navFrame=true;requestAnimationFrame(()=>{syncNav();navFrame=false})}},{passive:true});addEventListener("resize",syncNav);syncNav();
 })();
 </script>
 </body>
