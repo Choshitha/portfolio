@@ -17,6 +17,9 @@
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:alt" content="Choshitha Anisetti — Data Analyst. SQL, Python and Power BI.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Choshitha Anisetti — Data Analyst">
+<meta name="twitter:description" content="Explore data analytics, SQL, Python and AI projects by Choshitha Anisetti. Open to roles across Australia.">
+<link rel="canonical" href="https://choshitha.github.io/portfolio/">
 <meta name="twitter:image" content="https://choshitha.github.io/portfolio/assets/linkedin-preview.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230b1819%22/><text x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22%237dbcae%22 font-family=%22Georgia%22>C</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,6 +42,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--ui);padd
 h1,h2,h3{font-family:var(--disp);font-weight:400;line-height:1.1;margin:0}
 a{color:inherit}button,input{font:inherit;color:inherit}button{cursor:pointer}
 :focus-visible{outline:3px solid var(--brass);outline-offset:3px;border-radius:6px}
+.skip-link{position:fixed;top:8px;left:8px;z-index:100;transform:translateY(-160%);padding:10px 18px;background:var(--ink);color:var(--bg);border-radius:8px}
+.skip-link:focus{transform:translateY(0)}
+.card[hidden]{display:none}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 section{padding:60px 0;border-top:1px solid var(--line)}
@@ -232,6 +238,7 @@ footer{padding:0 0 44px;background:var(--d0);color:var(--ds);font-size:14px}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to main content</a>
 <nav class="nav" aria-label="Sections">
 <a href="#top" data-s="top" class="on">Home</a><a href="#work" data-s="work">Work</a><a href="#path" data-s="path">Path</a><a href="#skills" data-s="skills">Skills</a><a href="#contact" data-s="contact">Contact</a>
 </nav>
@@ -279,13 +286,13 @@ footer{padding:0 0 44px;background:var(--d0);color:var(--ds);font-size:14px}
 </div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
 <section id="work" data-nav="work"><div class="wrap">
   <h2>Query my work</h2>
-  <p class="lead">Pick a query or type a skill. The table runs against my real project list and the cards below follow it.</p>
+  <p class="lead">Filter my projects by skill or keyword. The SQL-style preview illustrates your selection; results are filtered in your browser.</p>
   <div class="console">
-    <div class="c-tab">portfolio.sql</div>
-    <pre class="sql" id="sql" aria-live="polite"></pre>
+    <div class="c-tab">portfolio.sql · query preview</div>
+    <pre class="sql" id="sql" aria-label="Illustrative SQL query"></pre>
     <div class="c-ctl">
       <div class="qchips" id="qchips" role="group" aria-label="Saved queries"></div>
       <label class="qin"><span class="vh">Filter by skill or keyword</span><input id="qi" type="search" placeholder="Type a skill, e.g. python" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
@@ -304,7 +311,7 @@ footer{padding:0 0 44px;background:var(--d0);color:var(--ds);font-size:14px}
 <section id="path" data-nav="path"><div class="wrap">
   <h2>My path so far</h2>
   <p class="lead">Study, work and learning on one timeline. Scroll sideways and tap a bar for details.</p>
-  <div class="tl-wrap" id="tlw"><div class="tl-in" id="tl"></div></div>
+  <div class="tl-wrap" id="tlw" tabindex="0" role="region" aria-label="Career timeline. Use left and right arrow keys to scroll."><div class="tl-in" id="tl"></div></div>
   <div id="tld" aria-live="polite"><p class="hintline" style="margin:0">Tap any bar to see what it was.</p></div>
 </div></section>
 
@@ -332,7 +339,8 @@ footer{padding:0 0 44px;background:var(--d0);color:var(--ds);font-size:14px}
   </div>
 </div></section>
 </main>
-<footer><div class="wrap">Ms. Choshitha Anisetti, 2026. Built by hand with HTML, CSS and JavaScript. No trackers.</div></footer>
+<footer><div class="wrap">© <span id="copyright-year">2026</span> Choshitha Anisetti. All rights reserved.</div></footer>
+<noscript><div class="wrap"><p>Enable JavaScript to explore the project filters and timeline. Contact: <a href="mailto:anisettichoshitha@gmail.com">anisettichoshitha@gmail.com</a>.</p></div></noscript>
 
 <script>
 (()=>{"use strict";
@@ -345,7 +353,14 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const COL=["var(--pat)","var(--slate)","var(--brass)","var(--rose)"];
 
 /* ---------- theme ---------- */
-$("#theme").onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=d?"light":"dark"};
+const root=document.documentElement,themeButton=$("#theme");
+try{const saved=localStorage.getItem("portfolio-theme");if(saved==="light"||saved==="dark")root.dataset.theme=saved}catch(_){}
+const isDark=()=>root.dataset.theme?root.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+function syncTheme(){themeButton.setAttribute("aria-pressed",String(isDark()))}
+syncTheme();
+matchMedia("(prefers-color-scheme:dark)").addEventListener("change",syncTheme);
+themeButton.onclick=()=>{root.dataset.theme=isDark()?"light":"dark";syncTheme();try{localStorage.setItem("portfolio-theme",root.dataset.theme)}catch(_){}};
+$("#copyright-year").textContent=new Date().getFullYear();
 
 /* ---------- live clock (Gold Coast) ---------- */
 const bf=new Intl.DateTimeFormat("en-AU",{timeZone:"Australia/Brisbane",hourCycle:"h23",hour:"2-digit",minute:"2-digit",second:"2-digit",weekday:"short",day:"numeric",month:"short"});
@@ -434,6 +449,7 @@ const P=[
  m:[["15","models studied"],["3","person team"]],
  v:SV(`${Array.from({length:30},(_,k)=>{const i=k%6,j=k/6|0,f=(i*3+j*5)%4<2;return `<rect x="${4+i*13}" y="${12+j*13}" width="11" height="11" rx="2" fill="var(--c)" opacity="${f?1:.18}"/>`}).join("")}<text x="92" y="46" text-anchor="middle">≈</text>${Array.from({length:10},(_,k)=>`<rect x="${106+(k%2)*13}" y="${12+(k/2|0)*13}" width="11" height="11" rx="2" fill="var(--c)" opacity=".55"/>`).join("")}<text x="143" y="46" text-anchor="middle">×</text>${Array.from({length:12},(_,k)=>`<rect x="${156+(k%6)*13}" y="${12+(k/6|0)*13}" width="11" height="11" rx="2" fill="var(--c)" opacity=".55"/>`).join("")}<text x="4" y="104">Rebuild missing ratings from two thin matrices</text>`)}
 ];
+P.sort((a,b)=>b.y-a.y);
 P.forEach(p=>p.h=(p.t+" "+p.tools+" "+p.tags.join(" ")+" "+p.s+" "+p.y+" "+(p.team?"team":"")).toLowerCase());
 
 const cards=$("#cards");
@@ -442,7 +458,7 @@ cards.addEventListener("click",e=>{const b=e.target.closest(".sent button");if(!
   w.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   const f=b.querySelector(".fl");f.style.width="0%";requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.width=""}));
   w.querySelector("p").textContent=SC[b.dataset.k]});
-function dots(){const n=cards.children.length,w=cards.firstElementChild.offsetWidth+14,i=Math.min(n-1,Math.round(cards.scrollLeft/w));$("#pg").innerHTML=Array.from({length:n},(_,j)=>`<i class="${j===i?"on":""}"></i>`).join("")}
+function dots(){const visible=[...cards.children].filter(c=>!c.hidden),n=visible.length,w=n?visible[0].offsetWidth+14:1,i=Math.min(n-1,Math.round(cards.scrollLeft/w));$("#pg").innerHTML=n>1?Array.from({length:n},(_,j)=>`<i class="${j===i?"on":""}"></i>`).join(""):""}
 cards.addEventListener("scroll",dots,{passive:true});dots();addEventListener("resize",dots);
 
 /* ---------- query console ---------- */
@@ -460,8 +476,9 @@ function update(q,anim){
   const rows=run(q);showSql(sqlFor(q),anim);
   $("#tb").innerHTML=rows.map(p=>`<tr><td><button type="button" class="go" data-id="${p.id}">${esc(p.t)}</button></td><td>${p.y}</td><td>${esc(p.tools)}</td></tr>`).join("");
   $("#rn").textContent=rows.length?rows.length+" of "+P.length+" projects match.":"No projects match. Try python, mongodb, forensics or team.";
-  const ids=new Set(rows.map(r=>r.id)),filtered=q.trim()!=="";
-  $$(".card").forEach(c=>c.classList.toggle("dim",filtered&&!ids.has(c.dataset.id)));
+  const ids=new Set(rows.map(r=>r.id));
+  $$(".card").forEach(c=>{c.hidden=!ids.has(c.dataset.id)});
+  cards.scrollLeft=0;dots();
   const key=q.trim().toLowerCase().replace(/\s+/g," ");$$("#qchips button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.q===key))}
 $("#qchips").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;qi.value=b.dataset.q;update(b.dataset.q,true)});
 qi.addEventListener("input",()=>update(qi.value,false));
@@ -493,8 +510,8 @@ const TL=[
 ];
 const LC={Study:"slate",Work:"pat",Learning:"brass"};
 let sel=-1;
-function buildTL(){const box=$("#tl"),cw=$("#tlw").clientWidth,G=96,T0=2020,T1=2027.3,PX=Math.max(125,(cw-G)/(T1-T0)),X=y=>G+(y-T0)*PX;
-  let html="";for(let y=2020;y<=2027;y++)html+=`<span class="yr" style="left:${X(y)}px">${y}</span><i class="gl" style="left:${X(y)}px"></i>`;
+function buildTL(){const box=$("#tl"),cw=$("#tlw").clientWidth,G=96,T0=2020,T1=Math.max(2027.3,NY+.7),PX=Math.max(125,(cw-G)/(T1-T0)),X=y=>G+(y-T0)*PX;
+  let html="";for(let y=2020;y<T1;y++)html+=`<span class="yr" style="left:${X(y)}px">${y}</span><i class="gl" style="left:${X(y)}px"></i>`;
   let top=34;
   ["Study","Work","Learning"].forEach(name=>{
     const it=TL.map((o,i)=>({o,i})).filter(z=>z.o.lane===name).map(z=>{const o=z.o,e=o.e==="now"?NY:o.e,x=X(o.s),w=Math.max(14,(e-o.s)*PX),lw=o.l.length*6.9+18,inside=w>=lw&&!o.left;
@@ -527,3 +544,4 @@ $$("[data-nav]").forEach(s=>io.observe(s));
 </script>
 </body>
 </html>
+
